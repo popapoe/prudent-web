@@ -1,0 +1,7 @@
+body.pass {
+	background-color: green;
+}
+
+body.fail {
+	background-color: red;
+}

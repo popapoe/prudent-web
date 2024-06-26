@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>lower set tests</title>
+		<script src="../../js/data/relation.js"></script>
+		<script src="../../js/data/lower-set.js"></script>
+		<script src="./lower-set-naive.js"></script>
+		<script src="../test.js"></script>
+		<link rel="stylesheet" href="../test.css">
+		<script>
+function sample_reservoir(size, iterable) {
+	let iterator = iterable[Symbol.iterator]();
+	let result = [];
+	if(size !== 0) {
+		for(let i = 0; i < size; i++) {
+			result.push(iterator.next().value);
+		}
+		for(let item of iterator) {
+			let i = size * Math.random() | 0;
+			result[i] = item;
+		}
+	}
+	return result;
+}
+
+function sample_mass(iterable) {
+	let iterator = iterable[Symbol.iterator]();
+	let random = Math.random();
+	for(let { mass, item } of iterator) {
+		random -= mass;
+		if(random < 0 || iterator.done) {
+			return item;
+		}
+	}
+}
+
+function* generate_relationships(size) {
+	for(let from = 0; from < size; from++) {
+		for(let to = from + 1; to < size; to++) {
+			yield { from, to };
+		}
+	}
+}
+
+function sample_relation(size, relationships) {
+	let relation = new Relation();
+	for(let { from, to } of sample_reservoir(relationships, generate_relationships(size))) {
+		relation.add(from, to);
+	}
+	let min = new Set();
+	for(let i = 0; i < size; i++) {
+		if(relation.get_preimage(i).size === 0) {
+			min.add(i);
+		}
+	}
+	return { relation, min };
+}
+
+function array_equal(left, right) {
+	if(left.length !== right.length) {
+		return false;
+	}
+	for(let i = 0; i < left.length; i++) {
+		if(left[i] != right[i]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+function test(size, relationships, steps) {
+	let { relation, min } = sample_relation(size, relationships);
+	let naive = new LowerSetNaive(relation, min);
+	let not_naive = new LowerSet(relation, min);
+	function contains() {
+		let el = size * Math.random() | 0;
+		let naive_result = naive.contains(el);
+		let not_naive_result = not_naive.contains(el);
+		if(naive_result !== not_naive_result) {
+			throw new Error();
+		}
+	}
+	function add_min_out() {
+		let min_out = Array.from(naive.generate_min_out());
+		if(min_out.length === 0) {
+			return;
+		}
+		let el = min_out[min_out.length * Math.random() | 0];
+		naive.add_min_out(el);
+		not_naive.add_min_out(el);
+	}
+	function remove_max_in() {
+		let max_in = Array.from(naive.generate_max_in());
+		if(max_in.length === 0) {
+			return;
+		}
+		let el = max_in[max_in.length * Math.random() | 0];
+		naive.remove_max_in(el);
+		not_naive.remove_max_in(el);
+	}
+	function is_min_out() {
+		let el = size * Math.random() | 0;
+		let naive_result = naive.is_min_out(el);
+		let not_naive_result = not_naive.is_min_out(el);
+		if(naive_result !== not_naive_result) {
+			throw new Error();
+		}
+	}
+	function is_max_in() {
+		let el = size * Math.random() | 0;
+		let naive_result = naive.is_max_in(el);
+		let not_naive_result = not_naive.is_max_in(el);
+		if(naive_result !== not_naive_result) {
+			throw new Error();
+		}
+	}
+	function generate_min_out() {
+		let naive_result = Array.from(naive.generate_min_out());
+		let not_naive_result = Array.from(not_naive.generate_min_out());
+		naive_result.sort();
+		not_naive_result.sort();
+		if(!array_equal(naive_result, not_naive_result)) {
+			throw new Error();
+		}
+	}
+	function generate_max_in() {
+		let naive_result = Array.from(naive.generate_max_in());
+		let not_naive_result = Array.from(not_naive.generate_max_in());
+		naive_result.sort();
+		not_naive_result.sort();
+		if(!array_equal(naive_result, not_naive_result)) {
+			throw new Error();
+		}
+	}
+	function generate_in_succ() {
+		let in_ = Array.from(naive.in);
+		if(in_.length === 0) {
+			return;
+		}
+		let el = in_[in_.length * Math.random() | 0];
+		let naive_result = Array.from(naive.generate_in_succ(el));
+		let not_naive_result = Array.from(not_naive.generate_in_succ(el));
+		naive_result.sort();
+		not_naive_result.sort();
+		if(!array_equal(naive_result, not_naive_result)) {
+			throw new Error();
+		}
+	}
+	function generate_out_pred() {
+		let out = Array.from(naive.out);
+		if(out.length === 0) {
+			return;
+		}
+		let el = out[out.length * Math.random() | 0];
+		let naive_result = Array.from(naive.generate_out_pred(el));
+		let not_naive_result = Array.from(not_naive.generate_out_pred(el));
+		naive_result.sort();
+		not_naive_result.sort();
+		if(!array_equal(naive_result, not_naive_result)) {
+			throw new Error();
+		}
+	}
+	for(let i = 0; i < steps; i++) {
+		sample_mass([
+			{ mass: .1, item: contains },
+			{ mass: .2, item: add_min_out },
+			{ mass: .1, item: remove_max_in },
+			{ mass: .1, item: is_min_out },
+			{ mass: .1, item: is_max_in },
+			{ mass: .1, item: generate_min_out },
+			{ mass: .1, item: generate_max_in },
+			{ mass: .1, item: generate_in_succ },
+			{ mass: .1, item: generate_out_pred },
+		])();
+	}
+}
+
+window.onload = function(event) {
+	for(let i = 0; i <= 45; i++) {
+		run(function() {
+			test(10, i, 100);
+		});
+	}
+	finish();
+};
+		</script>
+	</head>
+</html>
