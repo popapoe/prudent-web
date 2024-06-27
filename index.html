@@ -24,6 +24,9 @@
 			<ul id="dependencies"></ul>
 			<h3>dependents</h3>
 			<ul id="dependents"></ul>
+			<div>
+				<button id="back" title="Go to the previous screen.">back</button>
+			</div>
 		</template>
 		<script src="./js/data/relation.js"></script>
 		<script src="./js/data/lower-set.js"></script>
@@ -31,6 +34,7 @@
 		<script src="./js/data/data.js"></script>
 		<script src="./js/repo/repository.js"></script>
 		<script src="./js/model/model.js"></script>
+		<script src="./js/view/switcher.js"></script>
 		<script src="./js/view/front.js"></script>
 		<script src="./js/view/inspect-task.js"></script>
 	</head>
@@ -45,7 +49,9 @@ model.register_task(a);
 model.register_task(b);
 model.register_task(c);
 model.register_task(d);
-document.body.appendChild(make_inspect_task(model, b));
+let switcher = new Switcher();
+switcher.switch(make_front(model, switcher));
+document.body.appendChild(switcher.get_root());
 		</script>
 	</body>
 </html>

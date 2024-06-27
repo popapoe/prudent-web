@@ -1,6 +1,8 @@
+// view/inspect-task.js
+
 let template_front = document.getElementById("front");
 let template_first_task = document.getElementById("first-task");
-function make_front(model) {
+function make_front(model, switcher) {
 	let shadow_host = document.createElement("div");
 	let shadow_root = shadow_host.attachShadow({ mode: "open" });
 	shadow_root.appendChild(template_front.content.cloneNode(true));
@@ -25,7 +27,14 @@ function make_front(model) {
 			let first_task_description_element = first_task_shadow_root.getElementById("description");
 			let first_task_complete_element = first_task_shadow_root.getElementById("complete");
 			let first_task_cycle_element = first_task_shadow_root.getElementById("cycle");
-			first_task_title_element.textContent = first_task.title;
+			let first_task_link_element = document.createElement("a");
+			first_task_title_element.appendChild(first_task_link_element);
+			first_task_link_element.textContent = first_task.title;
+			first_task_link_element.href = "javascript:void(0);";
+			first_task_link_element.title = "Inspect this task.";
+			first_task_link_element.onclick = function(event) {
+				switcher.switch(make_inspect_task(model, switcher, first_task, shadow_host));
+			};
 			first_task_description_element.textContent = first_task.description;
 			first_task_complete_element.onclick = function(event) {
 				model.complete();
@@ -39,13 +48,27 @@ function make_front(model) {
 				let task = model.repository.data.completion_front[index];
 				let task_element = document.createElement("li");
 				completion_front_element.appendChild(task_element);
-				task_element.textContent = task.title;
+				let task_link_element = document.createElement("a");
+				task_element.appendChild(task_link_element);
+				task_link_element.textContent = task.title;
+				task_link_element.href = "javascript:void(0);";
+				task_link_element.title = "Inspect this task.";
+				task_link_element.onclick = function(event) {
+					switcher.switch(make_inspect_task(model, switcher, task, shadow_host));
+				};
 			}
 		}
 		for(let task of model.repository.data.uncompletion_front) {
 			let task_element = document.createElement("li");
 			uncompletion_front_element.appendChild(task_element);
-			task_element.textContent = task.title;
+			let task_link_element = document.createElement("a");
+			task_element.appendChild(task_link_element);
+			task_link_element.textContent = task.title;
+			task_link_element.href = "javascript:void(0);";
+			task_link_element.title = "Inspect this task.";
+			task_link_element.onclick = function(event) {
+				switcher.switch(make_inspect_task(model, switcher, task, shadow_host));
+			};
 		}
 	}
 	update();
