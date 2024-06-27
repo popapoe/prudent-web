@@ -8,6 +8,9 @@
 			<ul id="completion"></ul>
 			<h2>uncompletion</h2>
 			<ul id="uncompletion"></ul>
+			<div>
+				<button id="add" title="Create a task.">add</button>
+			</div>
 		</template>
 		<template id="first-task">
 			<h3 id="title"></h3>
@@ -29,6 +32,30 @@
 				<button id="back" title="Go to the previous screen.">back</button>
 			</div>
 		</template>
+		<template id="create">
+			<div>
+				<input id="title" placeholder="title" title="The title for this task.">
+			</div>
+			<textarea id="description" placeholder="description" title="The description for this task." rows="5"></textarea>
+			<h3>dependencies</h3>
+			<div>
+				<button id="add" title="Add a dependency.">add</button>
+			</div>
+			<ul id="dependencies"></ul>
+			<div>
+				<button id="back" title="Stop creating this task.">cancel</button>
+				<button id="create" title="Create this task.">create</button>
+			</div>
+		</template>
+		<template id="select">
+			<h2>completion</h2>
+			<ul id="completion"></ul>
+			<h2>uncompletion</h2>
+			<ul id="uncompletion"></ul>
+			<div>
+				<button id="back" title="Stop selecting.">cancel</button>
+			</div>
+		</template>
 		<script src="./js/data/relation.js"></script>
 		<script src="./js/data/lower-set.js"></script>
 		<script src="./js/data/objects.js"></script>
@@ -38,18 +65,12 @@
 		<script src="./js/view/switcher.js"></script>
 		<script src="./js/view/front.js"></script>
 		<script src="./js/view/inspect-task.js"></script>
+		<script src="./js/view/create.js"></script>
+		<script src="./js/view/select.js"></script>
 	</head>
 	<body>
 		<script>
-let d = new Task("d", "Idk", []);
-let c = new Task("c", "Idk", [ d ]);
-let b = new Task("b", "Idk", [ d ]);
-let a = new Task("a", "Idk", [ b, c ]);
 let model = new Model();
-model.register_task(a);
-model.register_task(b);
-model.register_task(c);
-model.register_task(d);
 let switcher = new Switcher();
 switcher.switch(make_front(model, switcher));
 document.body.appendChild(switcher.get_root());

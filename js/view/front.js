@@ -1,4 +1,4 @@
-// view/inspect-task.js
+// view/inspect-task.js view/create.js
 
 let template_front = document.getElementById("front");
 let template_first_task = document.getElementById("first-task");
@@ -8,6 +8,7 @@ function make_front(model, switcher) {
 	shadow_root.appendChild(template_front.content.cloneNode(true));
 	let completion_front_element = shadow_root.getElementById("completion");
 	let uncompletion_front_element = shadow_root.getElementById("uncompletion");
+	let add_element = shadow_root.getElementById("add");
 	function update() {
 		while(completion_front_element.firstChild !== null) {
 			completion_front_element.removeChild(completion_front_element.firstChild);
@@ -83,6 +84,13 @@ function make_front(model, switcher) {
 			};
 		}
 	}
+	add_element.onclick = function(event) {
+		switcher.switch(make_create(model, switcher, shadow_host, function(task) {
+			model.register_task(task);
+			update();
+			switcher.switch(shadow_host);
+		}));
+	};
 	update();
 	return shadow_host;
 }
