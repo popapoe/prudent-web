@@ -3,8 +3,40 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Title</title>
+		<template id="front">
+			<h2>completion</h2>
+			<ul id="completion"></ul>
+			<h2>uncompletion</h2>
+			<ul id="uncompletion"></ul>
+		</template>
+		<template id="first-task">
+			<h3 id="title"></h3>
+			<p id="description"></p>
+			<div>
+				<button id="complete" title="Complete this task.">complete</button>
+				<button id="cycle" title="Cycle this task.">cycle</button>
+			</div>
+		</template>
+		<script src="./js/data/relation.js"></script>
+		<script src="./js/data/lower-set.js"></script>
+		<script src="./js/data/objects.js"></script>
+		<script src="./js/data/data.js"></script>
+		<script src="./js/repo/repository.js"></script>
+		<script src="./js/model/model.js"></script>
+		<script src="./js/view/front.js"></script>
 	</head>
 	<body>
-		<p>HI</p>
+		<script>
+let d = new Task("d", "Idk", []);
+let c = new Task("c", "Idk", [ d ]);
+let b = new Task("b", "Idk", [ d ]);
+let a = new Task("a", "Idk", [ b, c ]);
+let model = new Model();
+model.register_task(a);
+model.register_task(b);
+model.register_task(c);
+model.register_task(d);
+document.body.appendChild(make_front(model));
+		</script>
 	</body>
 </html>
