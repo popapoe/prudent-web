@@ -17,6 +17,14 @@
 				<button id="cycle" title="Cycle this task.">cycle</button>
 			</div>
 		</template>
+		<template id="inspect-task">
+			<h2 id="title"></h2>
+			<p id="description"></p>
+			<h3>dependencies</h3>
+			<ul id="dependencies"></ul>
+			<h3>dependents</h3>
+			<ul id="dependents"></ul>
+		</template>
 		<script src="./js/data/relation.js"></script>
 		<script src="./js/data/lower-set.js"></script>
 		<script src="./js/data/objects.js"></script>
@@ -24,6 +32,7 @@
 		<script src="./js/repo/repository.js"></script>
 		<script src="./js/model/model.js"></script>
 		<script src="./js/view/front.js"></script>
+		<script src="./js/view/inspect-task.js"></script>
 	</head>
 	<body>
 		<script>
@@ -36,7 +45,7 @@ model.register_task(a);
 model.register_task(b);
 model.register_task(c);
 model.register_task(d);
-document.body.appendChild(make_front(model));
+document.body.appendChild(make_inspect_task(model, b));
 		</script>
 	</body>
 </html>
