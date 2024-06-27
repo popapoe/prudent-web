@@ -33,7 +33,11 @@ function make_front(model, switcher) {
 			first_task_link_element.href = "javascript:void(0);";
 			first_task_link_element.title = "Inspect this task.";
 			first_task_link_element.onclick = function(event) {
-				switcher.switch(make_inspect_task(model, switcher, first_task, shadow_host));
+				switcher.switch(make_inspect_task(model, switcher, first_task, shadow_host, [
+					new InspectTaskAction("cancel", "Go back to the task front.", function(task, screen) {
+						switcher.switch(shadow_host);
+					}),
+				]));
 			};
 			first_task_description_element.textContent = first_task.description;
 			first_task_complete_element.onclick = function(event) {
@@ -54,7 +58,11 @@ function make_front(model, switcher) {
 				task_link_element.href = "javascript:void(0);";
 				task_link_element.title = "Inspect this task.";
 				task_link_element.onclick = function(event) {
-					switcher.switch(make_inspect_task(model, switcher, task, shadow_host));
+					switcher.switch(make_inspect_task(model, switcher, task, shadow_host, [
+						new InspectTaskAction("cancel", "Go back to the task front.", function(task, screen) {
+							switcher.switch(shadow_host);
+						}),
+					]));
 				};
 			}
 		}
@@ -67,7 +75,11 @@ function make_front(model, switcher) {
 			task_link_element.href = "javascript:void(0);";
 			task_link_element.title = "Inspect this task.";
 			task_link_element.onclick = function(event) {
-				switcher.switch(make_inspect_task(model, switcher, task, shadow_host));
+				switcher.switch(make_inspect_task(model, switcher, task, shadow_host, [
+					new InspectTaskAction("cancel", "Go back to the task front.", function(task, screen) {
+						switcher.switch(shadow_host);
+					}),
+				]));
 			};
 		}
 	}
