@@ -42,7 +42,7 @@ function make_front(model, switcher) {
 			};
 			first_task_description_element.textContent = first_task.description;
 			first_task_complete_element.onclick = function(event) {
-				model.complete();
+				model.complete(0);
 				update();
 			};
 			first_task_cycle_element.onclick = function(event) {
@@ -54,7 +54,10 @@ function make_front(model, switcher) {
 				let task_element = document.createElement("li");
 				completion_front_element.appendChild(task_element);
 				let task_link_element = document.createElement("a");
+				let task_complete_element = document.createElement("button");
 				task_element.appendChild(task_link_element);
+				task_element.appendChild(document.createTextNode(" "));
+				task_element.appendChild(task_complete_element);
 				task_link_element.textContent = task.title;
 				task_link_element.href = "javascript:void(0);";
 				task_link_element.title = "Inspect this task.";
@@ -65,13 +68,23 @@ function make_front(model, switcher) {
 						}),
 					]));
 				};
+				task_complete_element.textContent = "complete";
+				task_complete_element.title = "Complete this task.";
+				task_complete_element.onclick = function(event) {
+					model.complete(index);
+					update();
+				};
 			}
 		}
-		for(let task of model.repository.data.uncompletion_front) {
+		for(let index = 0; index < model.repository.data.uncompletion_front.length; index++) {
+			let task = model.repository.data.uncompletion_front[index];
 			let task_element = document.createElement("li");
 			uncompletion_front_element.appendChild(task_element);
 			let task_link_element = document.createElement("a");
+			let task_uncomplete_element = document.createElement("button");
 			task_element.appendChild(task_link_element);
+			task_element.appendChild(document.createTextNode(" "));
+			task_element.appendChild(task_uncomplete_element);
 			task_link_element.textContent = task.title;
 			task_link_element.href = "javascript:void(0);";
 			task_link_element.title = "Inspect this task.";
@@ -81,6 +94,12 @@ function make_front(model, switcher) {
 						switcher.switch(shadow_host);
 					}),
 				]));
+			};
+			task_uncomplete_element.textContent = "uncomplete";
+			task_uncomplete_element.title = "Uncomplete this task.";
+			task_uncomplete_element.onclick = function(event) {
+				model.uncomplete(index);
+				update();
 			};
 		}
 	}
