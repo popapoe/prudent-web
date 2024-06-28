@@ -48,7 +48,7 @@ function make_create(model, switcher, back, callback) {
 		switcher.switch(back);
 	};
 	create_element.onclick = function(event) {
-		callback(new Task(title_element.value, description_element.value, Array.from(dependencies)));
+		callback(Task.create(title_element.value, description_element.value, Array.from(dependencies)));
 	};
 	return shadow_host;
 }

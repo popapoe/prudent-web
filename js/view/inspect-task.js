@@ -7,10 +7,12 @@ function make_inspect_task(model, switcher, task, back, actions) {
 	let description_element = shadow_root.getElementById("description");
 	let dependencies_element = shadow_root.getElementById("dependencies");
 	let dependents_element = shadow_root.getElementById("dependents");
+	let key_element = shadow_root.getElementById("key");
 	let actions_element = shadow_root.getElementById("actions");
 	let back_element = shadow_root.getElementById("back");
 	title_element.textContent = task.title;
 	description_element.textContent = task.description;
+	key_element.textContent = task.key;
 	for(let dependency of model.repository.data.registry.get_relation().get_preimage(task)) {
 		let task_element = document.createElement("li");
 		dependencies_element.appendChild(task_element);
