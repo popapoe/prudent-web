@@ -3,6 +3,12 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Title</title>
+		<style>
+body {
+	max-width: 40em;
+	margin: 10px auto;
+}
+		</style>
 		<template id="front">
 			<h1>task front</h1>
 			<h2>completion</h2>
@@ -35,6 +41,15 @@
 			</div>
 		</template>
 		<template id="create">
+			<style>
+#title, #description {
+	box-sizing: border-box;
+	width: 100%;
+}
+#description {
+	resize: vertical;
+}
+			</style>
 			<h1>create task</h1>
 			<div>
 				<input id="title" placeholder="title" title="The title for this task.">
