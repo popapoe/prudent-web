@@ -42,12 +42,14 @@ function make_front(model, switcher) {
 			};
 			first_task_description_element.textContent = first_task.description;
 			first_task_complete_element.onclick = function(event) {
-				model.complete(0);
-				update();
+				model.complete(0).then(function() {
+					update();
+				});
 			};
 			first_task_cycle_element.onclick = function(event) {
-				model.cycle();
-				update();
+				model.cycle().then(function() {
+					update();
+				});
 			};
 			for(let index = 1; index < model.repository.data.completion_front.length; index++) {
 				let task = model.repository.data.completion_front[index];
@@ -71,8 +73,9 @@ function make_front(model, switcher) {
 				task_complete_element.textContent = "complete";
 				task_complete_element.title = "Complete this task.";
 				task_complete_element.onclick = function(event) {
-					model.complete(index);
-					update();
+					model.complete(index).then(function() {
+						update();
+					});
 				};
 			}
 		}
@@ -98,16 +101,18 @@ function make_front(model, switcher) {
 			task_uncomplete_element.textContent = "uncomplete";
 			task_uncomplete_element.title = "Uncomplete this task.";
 			task_uncomplete_element.onclick = function(event) {
-				model.uncomplete(index);
-				update();
+				model.uncomplete(index).then(function() {
+					update();
+				});
 			};
 		}
 	}
 	add_element.onclick = function(event) {
 		switcher.switch(make_create(model, switcher, shadow_host, function(task) {
-			model.register_task(task);
-			update();
-			switcher.switch(shadow_host);
+			model.register_task(task).then(function() {
+				update();
+				switcher.switch(shadow_host);
+			});
 		}));
 	};
 	update();
