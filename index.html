@@ -17,6 +17,7 @@ body {
 			<ul id="uncompletion"></ul>
 			<div>
 				<button id="add" title="Create a task.">add</button>
+				<button id="snapshot" title="Go to the snapshotting screen.">snapshot</button>
 			</div>
 		</template>
 		<template id="first-task">
@@ -77,6 +78,26 @@ body {
 				<button id="back" title="Stop selecting.">cancel</button>
 			</div>
 		</template>
+		<template id="snapshot">
+			<style>
+#snapshot {
+	box-sizing: border-box;
+	width: 100%;
+	resize: vertical;
+}
+			</style>
+			<h1>snapshot</h1>
+			<div>
+				<button id="export" title="Save a snapshot.">export</button>
+			</div>
+			<textarea id="snapshot" placeholder="snapshot" title="The snapshot." rows="5"></textarea>
+			<div>
+				<button id="import" title="Restore the snapshot.">import</button>
+			</div>
+			<div>
+				<button id="back" title="Stop snapshotting.">back</button>
+			</div>
+		</template>
 		<script src="./js/data/relation.js"></script>
 		<script src="./js/data/lower-set.js"></script>
 		<script src="./js/data/objects.js"></script>
@@ -88,6 +109,7 @@ body {
 		<script src="./js/view/inspect-task.js"></script>
 		<script src="./js/view/create.js"></script>
 		<script src="./js/view/select.js"></script>
+		<script src="./js/view/snapshot.js"></script>
 	</head>
 	<body>
 		<script>

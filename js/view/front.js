@@ -1,4 +1,4 @@
-// view/inspect-task.js view/create.js
+// view/inspect-task.js view/create.js view/snapshot.js
 
 let template_front = document.getElementById("front");
 let template_first_task = document.getElementById("first-task");
@@ -9,6 +9,7 @@ function make_front(model, switcher) {
 	let completion_front_element = shadow_root.getElementById("completion");
 	let uncompletion_front_element = shadow_root.getElementById("uncompletion");
 	let add_element = shadow_root.getElementById("add");
+	let snapshot_element = shadow_root.getElementById("snapshot");
 	function update() {
 		while(completion_front_element.firstChild !== null) {
 			completion_front_element.removeChild(completion_front_element.firstChild);
@@ -113,6 +114,12 @@ function make_front(model, switcher) {
 				update();
 				switcher.switch(shadow_host);
 			});
+		}));
+	};
+	snapshot_element.onclick = function(event) {
+		switcher.switch(make_snapshot(model, switcher, shadow_host, function() {
+			update();
+			switcher.switch(shadow_host);
 		}));
 	};
 	update();

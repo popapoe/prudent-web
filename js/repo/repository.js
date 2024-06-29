@@ -8,10 +8,7 @@ class Repository {
 	}
 	// Registers `task` as an incomplete task. Mutates this repository.
 	async register_task(task) {
-		this.data.registry.add(task);
-		for(let dependency of task.dependencies) {
-			this.data.registry.add_relationship(dependency, task);
-		}
+		this.data.register_task(task);
 	}
 	// Completes `task`, assuming it is a minimal uncomplete task. Mutates this repository.
 	async complete(task) {
