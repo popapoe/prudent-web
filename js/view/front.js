@@ -10,6 +10,7 @@ function make_front(model, switcher) {
 	let uncompletion_front_element = shadow_root.getElementById("uncompletion");
 	let add_element = shadow_root.getElementById("add");
 	let snapshot_element = shadow_root.getElementById("snapshot");
+	let materialize_element = shadow_root.getElementById("materialize");
 	function update() {
 		while(completion_front_element.firstChild !== null) {
 			completion_front_element.removeChild(completion_front_element.firstChild);
@@ -121,6 +122,9 @@ function make_front(model, switcher) {
 			update();
 			switcher.switch(shadow_host);
 		}));
+	};
+	materialize_element.onclick = function(event) {
+		model.repository.materialize();
 	};
 	update();
 	return shadow_host;

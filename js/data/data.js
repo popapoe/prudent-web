@@ -4,6 +4,7 @@
 class Data {
 	// Constructs an empty database.
 	constructor() {
+		this.tasks = new Map();
 		this.registry = new LowerSetRegistry();
 		this.completed = this.registry.create();
 		this.completion_front = [];
@@ -15,6 +16,7 @@ class Data {
 		for(let dependency of task.dependencies) {
 			this.registry.add_relationship(dependency, task);
 		}
+		this.tasks.set(task.key, task);
 	}
 	// Returns a snapshot of the state of the database `data`.
 	static save(data) {
@@ -54,21 +56,20 @@ class Data {
 	// Returns a database restored from the snapshot `snapshot`.
 	static restore(snapshot) {
 		let data = new Data();
-		let tasks = new Map();
 		for(let task_data of snapshot.tasks) {
 			let dependencies = [];
 			for(let dependency_key of task_data.dependency_keys) {
-				dependencies.push(tasks.get(dependency_key));
+				dependencies.push(data.tasks.get(dependency_key));
 			}
 			let task = new Task(task_data.key, task_data.title, task_data.description, dependencies);
-			tasks.set(task_data.key, task);
+			data.tasks.set(task_data.key, task);
 			data.register_task(task);
 		}
 		for(let key of snapshot.completion_front_keys) {
-			data.completion_front.push(tasks.get(key));
+			data.completion_front.push(data.tasks.get(key));
 		}
 		for(let key of snapshot.uncompletion_front_keys) {
-			let task = tasks.get(key);
+			let task = data.tasks.get(key);
 			data.uncompletion_front.push(task);
 			data.completed.add(task);
 		}

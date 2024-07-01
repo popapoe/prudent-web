@@ -18,6 +18,7 @@ body {
 			<div>
 				<button id="add" title="Create a task.">add</button>
 				<button id="snapshot" title="Go to the snapshotting screen.">snapshot</button>
+				<button id="materialize" title="Materialize the state of the repository.">materialize</button>
 			</div>
 		</template>
 		<template id="first-task">
@@ -102,6 +103,7 @@ body {
 		<script src="./js/data/lower-set.js"></script>
 		<script src="./js/data/objects.js"></script>
 		<script src="./js/data/data.js"></script>
+		<script src="./js/repo/entry.js"></script>
 		<script src="./js/repo/repository.js"></script>
 		<script src="./js/model/model.js"></script>
 		<script src="./js/view/switcher.js"></script>
@@ -113,10 +115,13 @@ body {
 	</head>
 	<body>
 		<script>
-let model = new Model();
-let switcher = new Switcher();
-switcher.switch(make_front(model, switcher));
-document.body.appendChild(switcher.get_root());
+let repository = new Repository();
+let model = new Model(repository);
+repository.initialize().then(function() {
+	switcher = new Switcher();
+	switcher.switch(make_front(model, switcher));
+	document.body.appendChild(switcher.get_root());
+});
 		</script>
 	</body>
 </html>

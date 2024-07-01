@@ -18,6 +18,7 @@ function make_snapshot(model, switcher, back, callback) {
 	};
 	import_element.onclick = function(event) {
 		model.repository.data = Data.restore(JSON.parse(snapshot_element.value));
+		model.repository.materialize();
 		callback();
 	};
 	return shadow_host;

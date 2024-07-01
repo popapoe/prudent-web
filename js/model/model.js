@@ -1,8 +1,8 @@
 // repo/repository.js
 
 class Model {
-	constructor() {
-		this.repository = new Repository();
+	constructor(repository) {
+		this.repository = repository;
 	}
 	// Registers `task`. Mutates this model.
 	async register_task(task) {
@@ -11,6 +11,7 @@ class Model {
 			let index = this.repository.data.completion_front.length;
 			await this.repository.insert_completion_front(index, task);
 		}
+		await this.repository.commit();
 	}
 	// Completes the task with index `index` in the completion front, assuming it exists. Mutates this model.
 	async complete(index) {
@@ -29,6 +30,7 @@ class Model {
 			}
 		}
 		await this.repository.insert_uncompletion_front(this.repository.data.uncompletion_front.length, task);
+		await this.repository.commit();
 	}
 	// Uncompletes the task with index `index` in the uncompletion front, assuming it exists. Mutates this model.
 	async uncomplete(index) {
@@ -47,6 +49,7 @@ class Model {
 			}
 		}
 		await this.repository.insert_completion_front(this.repository.data.completion_front.length, task);
+		await this.repository.commit();
 	}
 	// Moves the first task in the completion front to the end, assuming it exists. Mutates this model.
 	async cycle() {
@@ -54,5 +57,6 @@ class Model {
 		await this.repository.delete_completion_front(0);
 		let index = this.repository.data.completion_front.length;
 		await this.repository.insert_completion_front(index, task);
+		await this.repository.commit();
 	}
 }
