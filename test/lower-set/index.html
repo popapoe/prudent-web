@@ -13,12 +13,17 @@ function sample_reservoir(size, iterable) {
 	let iterator = iterable[Symbol.iterator]();
 	let result = [];
 	if(size !== 0) {
-		for(let i = 0; i < size; i++) {
-			result.push(iterator.next().value);
-		}
+		let i = 0;
 		for(let item of iterator) {
-			let i = size * Math.random() | 0;
-			result[i] = item;
+			if(i < size) {
+				result.push(item);
+			} else {
+				let j = i * Math.random() | 0;
+				if(j < size) {
+					result[j] = item;
+				}
+			}
+			i++;
 		}
 	}
 	return result;
