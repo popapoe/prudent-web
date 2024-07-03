@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>mlss tests</title>
+		<script src="../../js/data/relation.js"></script>
+		<script src="../../js/data/lower-set.js"></script>
+		<script src="../../js/data/mlss.js"></script>
+		<script src="../test.js"></script>
+		<link rel="stylesheet" href="../test.css">
+		<script>
+function sample_reservoir(size, iterable) {
+	let iterator = iterable[Symbol.iterator]();
+	let result = [];
+	if(size !== 0) {
+		let i = 0;
+		for(let item of iterator) {
+			if(i < size) {
+				result.push(item);
+			} else {
+				let j = i * Math.random() | 0;
+				if(j < size) {
+					result[j] = item;
+				}
+			}
+			i++;
+		}
+	}
+	return result;
+}
+
+function sample_mass(iterable) {
+	let iterator = iterable[Symbol.iterator]();
+	let random = Math.random();
+	for(let { mass, item } of iterator) {
+		random -= mass;
+		if(random < 0 || iterator.done) {
+			return item;
+		}
+	}
+}
+
+function* generate_relationships(size) {
+	for(let from = 0; from < size; from++) {
+		for(let to = from + 1; to < size; to++) {
+			yield { from, to };
+		}
+	}
+}
+
+function sample_relation(size, relationships) {
+	let relation = new Relation();
+	for(let { from, to } of sample_reservoir(relationships, generate_relationships(size))) {
+		relation.add(from, to);
+	}
+	let min = new Set();
+	for(let i = 0; i < size; i++) {
+		if(relation.get_preimage(i).size === 0) {
+			min.add(i);
+		}
+	}
+	return { relation, min };
+}
+
+function test(size, relationships, steps) {
+	let registry = new LowerSetRegistry();
+	let { relation, min } = sample_relation(size, relationships);
+	registry.relation = relation;
+	registry.min = min;
+	let in_ = new Set();
+	let out = new Set();
+	for(let i = 0; i < size; i++) {
+		out.add(i);
+	}
+	let maximum_lower_subset = new MaximumLowerSubset(registry);
+	let minimum_lower_superset = new MinimumLowerSuperset(registry);
+	function contains() {
+		let el = size * Math.random() | 0;
+		let set_result = in_.has(el);
+		let maximum_lower_subset_result = maximum_lower_subset.contains(el);
+		let minimum_lower_superset_result = minimum_lower_superset.contains(el);
+		if(set_result !== maximum_lower_subset_result) {
+			throw new Error();
+		}
+		if(set_result !== minimum_lower_superset_result) {
+			throw new Error();
+		}
+	}
+	function add() {
+		if(out.size === 0) {
+			return;
+		}
+		let el = sample_reservoir(1, out)[0];
+		in_.add(el);
+		out.delete(el);
+		maximum_lower_subset.add(el);
+		minimum_lower_superset.add(el);
+	}
+	function remove() {
+		if(in_.size === 0) {
+			return;
+		}
+		let el = sample_reservoir(1, in_)[0];
+		in_.delete(el);
+		out.add(el);
+		maximum_lower_subset.remove(el);
+		minimum_lower_superset.remove(el);
+	}
+	function get_maximum_lower_subset() {
+		for(let el of out) {
+			if(maximum_lower_subset.get_maximum_lower_subset().contains(el)) {
+				throw new Error();
+			}
+		}
+		let count = 0;
+		for(let el of in_) {
+			if(!maximum_lower_subset.get_maximum_lower_subset().contains(el)) {
+				if(maximum_lower_subset.get_maximum_lower_subset().is_max_in(el)) {
+					throw new Error();
+				}
+			} else {
+				count++;
+			}
+		}
+	}
+	function get_minimum_lower_superset() {
+		for(let el of in_) {
+			if(!minimum_lower_superset.get_minimum_lower_superset().contains(el)) {
+				throw new Error();
+			}
+		}
+		let count = 0;
+		for(let el of out) {
+			if(minimum_lower_superset.get_minimum_lower_superset().contains(el)) {
+				if(minimum_lower_superset.get_minimum_lower_superset().is_min_out(el)) {
+					throw new Error();
+				}
+			} else {
+				count++;
+			}
+		}
+	}
+	for(let i = 0; i < steps; i++) {
+		sample_mass([
+			{ mass: .2, item: contains },
+			{ mass: .3, item: add },
+			{ mass: .1, item: remove },
+			{ mass: .2, item: get_maximum_lower_subset },
+			{ mass: .2, item: get_minimum_lower_superset },
+		])();
+	}
+}
+
+window.onload = function(event) {
+	for(let i = 0; i <= 45; i++) {
+		run(function() {
+			test(10, i, 100);
+		});
+	}
+	finish();
+};
+		</script>
+	</head>
+</html>
