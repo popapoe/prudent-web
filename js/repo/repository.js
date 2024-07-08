@@ -161,13 +161,9 @@ class Repository {
 	register_task(task) {
 		return this.perform(new Entry(EntryRegisterTask, new EntryRegisterTask(task)));
 	}
-	// Completes `task`, assuming it is a minimal uncomplete task. Mutates this repository.
-	complete(task) {
-		return this.perform(new Entry(EntryComplete, new EntryComplete(task)));
-	}
-	// Completes `task`, assuming it is a maximal complete task. Mutates this repository.
-	uncomplete(task) {
-		return this.perform(new Entry(EntryUncomplete, new EntryUncomplete(task)));
+	// Adds `operation`. Mutates this repository.
+	add_operation(operation) {
+		return this.perform(new Entry(EntryAddOperation, new EntryAddOperation(operation)));
 	}
 	// Inserts `task` before `index` in the completion front. Mutates this repository.
 	insert_completion_front(index, task) {

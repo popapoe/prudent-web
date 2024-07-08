@@ -41,35 +41,34 @@ class EntryRegisterTask {
 	}
 }
 
-class EntryComplete {
-	constructor(task) {
-		this.task = task;
+class EntryAddOperation {
+	constructor(operation) {
+		this.operation = operation;
 	}
 	async execute(data) {
-		data.completed.add_min_out(this.task);
+		data.operations.set(this.operation.key, this.operation);
+		data.completed.add_operation(this.operation);
 	}
-	static name = "complete";
+	static name = "add operation";
 	static serialize(data, entry) {
-		return entry.task.key;
+		let cause_keys = [];
+		for(let cause of entry.operation.causes) {
+			cause_keys.push(cause.key);
+		}
+		return {
+			key: entry.operation.key,
+			el_key: entry.operation.el.key,
+			is_in: entry.operation.is_in,
+			cause_keys: cause_keys,
+		};
 	}
 	static deserialize(data, object) {
-		return new EntryComplete(data.tasks.get(object));
-	}
-}
-
-class EntryUncomplete {
-	constructor(task) {
-		this.task = task;
-	}
-	async execute(data) {
-		data.completed.remove_max_in(this.task);
-	}
-	static name = "uncomplete";
-	static serialize(data, entry) {
-		return entry.task.key;
-	}
-	static deserialize(data, object) {
-		return new EntryUncomplete(data.tasks.get(object));
+		let task = data.tasks.get(object.el_key);
+		let causes = [];
+		for(let cause_key of object.cause_keys) {
+			causes.push(data.operations.get(cause_key));
+		}
+		return new EntryAddOperation(new Operation(object.key, task, object.is_in, causes));
 	}
 }
 
@@ -147,8 +146,7 @@ class EntryDeleteUncompletionFront {
 
 let entry_type_registry = new EntryTypeRegistry();
 entry_type_registry.register(EntryRegisterTask);
-entry_type_registry.register(EntryComplete);
-entry_type_registry.register(EntryUncomplete);
+entry_type_registry.register(EntryAddOperation);
 entry_type_registry.register(EntryInsertCompletionFront);
 entry_type_registry.register(EntryDeleteCompletionFront);
 entry_type_registry.register(EntryInsertUncompletionFront);
