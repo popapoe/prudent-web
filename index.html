@@ -19,6 +19,7 @@ body {
 				<button id="add" title="Create a task.">add</button>
 				<button id="snapshot" title="Go to the snapshotting screen.">snapshot</button>
 				<button id="materialize" title="Materialize the state of the repository.">materialize</button>
+				<button id="synchronize" title="Synchronize completed tasks.">synchronize</button>
 			</div>
 		</template>
 		<template id="first-task">
@@ -99,6 +100,16 @@ body {
 				<button id="back" title="Stop snapshotting.">back</button>
 			</div>
 		</template>
+		<template id="synchronize">
+			<h1>synchronize</h1>
+			<div>
+				<button id="give" title="Give tasks to another replica.">give</button>
+				<button id="take" title="Take tasks to another replica.">take</button>
+			</div>
+			<div>
+				<button id="back" title="Stop synchronizing.">back</button>
+			</div>
+		</template>
 		<script src="./js/data/relation.js"></script>
 		<script src="./js/data/lower-set.js"></script>
 		<script src="./js/data/objects.js"></script>
@@ -115,6 +126,7 @@ body {
 		<script src="./js/view/create.js"></script>
 		<script src="./js/view/select.js"></script>
 		<script src="./js/view/snapshot.js"></script>
+		<script src="./js/view/synchronize.js"></script>
 	</head>
 	<body>
 		<script>

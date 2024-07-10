@@ -1,4 +1,4 @@
-// view/inspect-task.js view/create.js view/snapshot.js
+// view/inspect-task.js view/create.js view/snapshot.js view/synchronize.js
 
 let template_front = document.getElementById("front");
 let template_first_task = document.getElementById("first-task");
@@ -11,6 +11,7 @@ function make_front(model, switcher) {
 	let add_element = shadow_root.getElementById("add");
 	let snapshot_element = shadow_root.getElementById("snapshot");
 	let materialize_element = shadow_root.getElementById("materialize");
+	let synchronize_element = shadow_root.getElementById("synchronize");
 	function update() {
 		while(completion_front_element.firstChild !== null) {
 			completion_front_element.removeChild(completion_front_element.firstChild);
@@ -125,6 +126,12 @@ function make_front(model, switcher) {
 	};
 	materialize_element.onclick = function(event) {
 		model.repository.materialize();
+	};
+	synchronize_element.onclick = function(event) {
+		switcher.switch(make_synchronize(model, switcher, shadow_host, function() {
+			update();
+			switcher.switch(shadow_host);
+		}));
 	};
 	update();
 	return shadow_host;

@@ -44,4 +44,16 @@ class DistributedLowerSet {
 	is_max_not_definitely_out(el) {
 		return this.not_possibly_incomplete.get_minimum_lower_superset().is_max_in(el);
 	}
+	// Returns an iterable yielding the maximal definitely in elements valid until this set is mutated.
+	generate_max_definitely_in() {
+		return this.possibly_complete.get_maximum_lower_subset().generate_max_in();
+	}
+	// Returns an iterable yielding the minimal not definitely in elements valid until this set is mutated.
+	generate_min_not_definitely_in() {
+		return this.possibly_complete.get_maximum_lower_subset().generate_min_out();
+	}
+	// Returns an iterable yielding the minimal not definitely out elements valid until this set is mutated.
+	generate_max_not_definitely_out() {
+		return this.not_possibly_incomplete.get_minimum_lower_superset().generate_max_in();
+	}
 }
