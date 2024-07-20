@@ -1,13 +1,15 @@
-// data/lower-set.js data/dls.js
+// data/lower-set.js data/dls.js data/objects.js
 
 // An in-memory database.
 class Data {
 	// Constructs an empty database.
 	constructor() {
 		this.tasks = new Map();
+		this.sets = new Map();
 		this.operations = new Map();
 		this.registry = new LowerSetRegistry();
-		this.completed = new DistributedLowerSet(this.registry);
+		this.completed = new Set_("completed", new DistributedLowerSet(this.registry));
+		this.sets.set("completed", this.completed);
 		this.completion_front = [];
 		this.uncompletion_front = [];
 	}
@@ -23,6 +25,7 @@ class Data {
 	static save(data) {
 		let snapshot = {
 			tasks: [],
+			sets: [],
 			operations: [],
 			completion_front_keys: [],
 			uncompletion_front_keys: [],
@@ -46,7 +49,7 @@ class Data {
 				description: task.description,
 				dependency_keys: dependency_keys,
 			});
-			for(let operation of data.completed.get_history(task).get_operations()) {
+			for(let operation of data.completed.set.get_history(task).get_operations()) {
 				let cause_keys = [];
 				for(let cause of operation.causes) {
 					cause_keys.push(cause.key);
@@ -54,10 +57,14 @@ class Data {
 				snapshot.operations.push({
 					key: operation.key,
 					task_key: operation.el.key,
+					set_key: operation.set.key,
 					is_in: operation.is_in,
 					cause_keys: cause_keys,
 				});
 			}
+		}
+		for(let set of data.sets.values()) {
+			snapshot.sets.push(set.key);
 		}
 		for(let task of data.completion_front) {
 			snapshot.completion_front_keys.push(task.key);
@@ -79,15 +86,21 @@ class Data {
 			data.tasks.set(task_data.key, task);
 			data.register_task(task);
 		}
+		for(let key of snapshot.sets) {
+			let set = new Set_(key, new DistributedLowerSet(data.registry));
+			data.sets.set(key, set);
+		}
+		data.completed = data.sets.get("completed");
 		for(let operation_data of snapshot.operations) {
 			let causes = [];
 			for(let cause_key of operation_data.cause_keys) {
 				causes.push(data.operations.get(cause_key));
 			}
 			let task = data.tasks.get(operation_data.task_key);
-			let operation = new Operation(operation_data.key, task, operation_data.is_in, causes);
+			let set = data.sets.get(operation_data.set_key);
+			let operation = new Operation(operation_data.key, task, set, operation_data.is_in, causes);
 			data.operations.set(operation_data.key, operation);
-			data.completed.add_operation(operation);
+			data.completed.set.add_operation(operation);
 		}
 		for(let key of snapshot.completion_front_keys) {
 			data.completion_front.push(data.tasks.get(key));

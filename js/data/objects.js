@@ -12,14 +12,26 @@ class Task {
 }
 
 class Operation {
-	constructor(key, el, is_in, causes) {
+	constructor(key, el, set, is_in, causes) {
 		this.key = key;
 		this.el = el;
+		this.set = set;
 		this.is_in = is_in;
 		this.causes = causes;
 	}
-	static create(el, is_in, causes) {
+	static create(el, set, is_in, causes) {
 		let key = crypto.randomUUID();
-		return new Operation(key, el, is_in, causes);
+		return new Operation(key, el, set, is_in, causes);
+	}
+}
+
+class Set_ {
+	constructor(key, set) {
+		this.key = key;
+		this.set = set;
+	}
+	static create(set) {
+		let key = crypto.randomUUID();
+		return new Set_(key, set);
 	}
 }

@@ -47,7 +47,7 @@ class EntryAddOperation {
 	}
 	async execute(data) {
 		data.operations.set(this.operation.key, this.operation);
-		data.completed.add_operation(this.operation);
+		this.operation.set.set.add_operation(this.operation);
 	}
 	static name = "add operation";
 	static serialize(data, entry) {
@@ -58,17 +58,19 @@ class EntryAddOperation {
 		return {
 			key: entry.operation.key,
 			el_key: entry.operation.el.key,
+			set_key: entry.operation.set.key,
 			is_in: entry.operation.is_in,
 			cause_keys: cause_keys,
 		};
 	}
 	static deserialize(data, object) {
 		let task = data.tasks.get(object.el_key);
+		let set = data.sets.get(object.set_key);
 		let causes = [];
 		for(let cause_key of object.cause_keys) {
 			causes.push(data.operations.get(cause_key));
 		}
-		return new EntryAddOperation(new Operation(object.key, task, object.is_in, causes));
+		return new EntryAddOperation(new Operation(object.key, task, set, object.is_in, causes));
 	}
 }
 

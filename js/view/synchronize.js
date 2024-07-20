@@ -9,7 +9,7 @@ function make_synchronize(model, switcher, back, callback) {
 	let take_element = shadow_root.getElementById("take");
 	let back_element = shadow_root.getElementById("back");
 	give_element.onclick = function(event) {
-		model.give(async function() {
+		model.give(model.repository.data.completed, async function() {
 			return prompt();
 		}, function(line) {
 			alert(line);
@@ -17,7 +17,7 @@ function make_synchronize(model, switcher, back, callback) {
 		callback();
 	};
 	take_element.onclick = function(event) {
-		model.take(async function() {
+		model.take(model.repository.data.completed, async function() {
 			return prompt();
 		}, function(line) {
 			alert(line);
