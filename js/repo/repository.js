@@ -157,6 +157,10 @@ class Repository {
 			};
 		});
 	}
+	// Registers `set`, assuming it is empty. Mutates this repository.
+	register_set(set) {
+		return this.perform(new Entry(EntryRegisterSet, new EntryRegisterSet(set)));
+	}
 	// Registers `task` as an incomplete task. Mutates this repository.
 	register_task(task) {
 		return this.perform(new Entry(EntryRegisterTask, new EntryRegisterTask(task)));

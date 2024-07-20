@@ -1,10 +1,10 @@
 // data/objects.js view/inspect-task.js view/select.js
 
-let template_create = document.getElementById("create");
-function make_create(model, switcher, back, callback) {
+let template_create_task = document.getElementById("create-task");
+function make_create_task(model, switcher, back, callback) {
 	let shadow_host = document.createElement("div");
 	let shadow_root = shadow_host.attachShadow({ mode: "open" });
-	shadow_root.appendChild(template_create.content.cloneNode(true));
+	shadow_root.appendChild(template_create_task.content.cloneNode(true));
 	let title_element = shadow_root.getElementById("title");
 	let description_element = shadow_root.getElementById("description");
 	let dependencies_element = shadow_root.getElementById("dependencies");
@@ -28,7 +28,11 @@ function make_create(model, switcher, back, callback) {
 				task_link_element.title = "Inspect this task.";
 				task_link_element.onclick = function(event) {
 					switcher.switch(make_inspect_task(model, switcher, task, shadow_host, [
-						new InspectTaskAction("cancel", "Go back to the task front.", function(task, screen) {
+						new InspectTaskAction("cancel", "Stop inspecting.", function(task, screen) {
+							switcher.switch(shadow_host);
+						}),
+					], [
+						new InspectProjectAction("cancel", "Stop inspecting.", function(set, screen) {
 							switcher.switch(shadow_host);
 						}),
 					]));

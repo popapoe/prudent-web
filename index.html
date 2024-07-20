@@ -9,18 +9,47 @@ body {
 	margin: 10px auto;
 }
 		</style>
+		<template id="home">
+			<h1>home</h1>
+			<h2>projects</h2>
+			<div>
+				<button id="create" title="Create a project.">create</button>
+				<button id="global" title="Visit the global task front.">global</button>
+			</div>
+			<ul id="projects"></ul>
+			<div>
+				<button id="snapshot" title="Go to the snapshotting screen.">snapshot</button>
+				<button id="materialize" title="Materialize the state of the repository.">materialize</button>
+			</div>
+		</template>
+		<template id="global">
+			<h1>global</h1>
+			<div id="front"></div>
+			<div>
+				<button id="create" title="Create a task.">create</button>
+			</div>
+			<div>
+				<button id="back" title="Go to the previous screen.">back</button>
+			</div>
+		</template>
+		<template id="project">
+			<h1>project</h1>
+			<h2 id="title"></h2>
+			<p id="description"></p>
+			<div id="front"></div>
+			<div>
+				<button id="add" title="Add a task to this project.">add</button>
+				<button id="synchronize" title="Synchronize tasks in this project.">synchronize</button>
+			</div>
+			<div>
+				<button id="back" title="Go to the previous screen.">back</button>
+			</div>
+		</template>
 		<template id="front">
-			<h1>task front</h1>
 			<h2>completion</h2>
 			<ul id="completion"></ul>
 			<h2>uncompletion</h2>
 			<ul id="uncompletion"></ul>
-			<div>
-				<button id="add" title="Create a task.">add</button>
-				<button id="snapshot" title="Go to the snapshotting screen.">snapshot</button>
-				<button id="materialize" title="Materialize the state of the repository.">materialize</button>
-				<button id="synchronize" title="Synchronize completed tasks.">synchronize</button>
-			</div>
 		</template>
 		<template id="first-task">
 			<h3 id="title"></h3>
@@ -38,6 +67,8 @@ body {
 			<ul id="dependencies"></ul>
 			<h3>dependents</h3>
 			<ul id="dependents"></ul>
+			<h3>projects</h3>
+			<ul id="projects"></ul>
 			<h3>key</h3>
 			<p id="key"></p>
 			<div id="actions"></div>
@@ -45,7 +76,22 @@ body {
 				<button id="back" title="Go to the previous screen.">back</button>
 			</div>
 		</template>
-		<template id="create">
+		<template id="inspect-project">
+			<h1>inspect project</h1>
+			<h2 id="title"></h2>
+			<p id="description"></p>
+			<h3>completion</h3>
+			<ul id="completion"></ul>
+			<h3>uncompletion</h3>
+			<ul id="uncompletion"></ul>
+			<h3>key</h3>
+			<p id="key"></p>
+			<div id="actions"></div>
+			<div>
+				<button id="back" title="Go to the previous screen.">back</button>
+			</div>
+		</template>
+		<template id="create-task">
 			<style>
 #title, #description {
 	box-sizing: border-box;
@@ -68,6 +114,26 @@ body {
 			<div>
 				<button id="back" title="Stop creating this task.">cancel</button>
 				<button id="create" title="Create this task.">create</button>
+			</div>
+		</template>
+		<template id="create-project">
+			<style>
+#title, #description {
+	box-sizing: border-box;
+	width: 100%;
+}
+#description {
+	resize: vertical;
+}
+			</style>
+			<h1>create project</h1>
+			<div>
+				<input id="title" placeholder="title" title="The title for this project.">
+			</div>
+			<textarea id="description" placeholder="description" title="The description for this project." rows="5"></textarea>
+			<div>
+				<button id="back" title="Stop creating this project.">cancel</button>
+				<button id="create" title="Create this project.">create</button>
 			</div>
 		</template>
 		<template id="select">
@@ -121,9 +187,14 @@ body {
 		<script src="./js/repo/repository.js"></script>
 		<script src="./js/model/model.js"></script>
 		<script src="./js/view/switcher.js"></script>
+		<script src="./js/view/home.js"></script>
+		<script src="./js/view/global.js"></script>
+		<script src="./js/view/project.js"></script>
 		<script src="./js/view/front.js"></script>
 		<script src="./js/view/inspect-task.js"></script>
-		<script src="./js/view/create.js"></script>
+		<script src="./js/view/inspect-project.js"></script>
+		<script src="./js/view/create-task.js"></script>
+		<script src="./js/view/create-project.js"></script>
 		<script src="./js/view/select.js"></script>
 		<script src="./js/view/snapshot.js"></script>
 		<script src="./js/view/synchronize.js"></script>
@@ -134,7 +205,7 @@ let repository = new Repository();
 let model = new Model(repository);
 repository.initialize().then(function() {
 	switcher = new Switcher();
-	switcher.switch(make_front(model, switcher));
+	switcher.switch(make_home(model, switcher));
 	document.body.appendChild(switcher.get_root());
 });
 		</script>

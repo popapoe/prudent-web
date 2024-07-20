@@ -24,6 +24,10 @@ function make_select(model, switcher, back, callback) {
 				new InspectTaskAction("select", "Select this task.", function(task, screen) {
 					callback(task);
 				}),
+			], [
+				new InspectProjectAction("cancel", "Stop selecting.", function(set, screen) {
+					switcher.switch(back);
+				}),
 			]));
 		};
 	}
@@ -42,6 +46,10 @@ function make_select(model, switcher, back, callback) {
 				}),
 				new InspectTaskAction("select", "Select this task.", function(task, screen) {
 					callback(task);
+				}),
+			], [
+				new InspectProjectAction("cancel", "Stop selecting.", function(set, screen) {
+					switcher.switch(back);
 				}),
 			]));
 		};

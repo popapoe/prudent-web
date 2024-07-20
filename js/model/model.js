@@ -4,6 +4,11 @@ class Model {
 	constructor(repository) {
 		this.repository = repository;
 	}
+	// Registers `set`, assuming it is empty. Mutates this model.
+	async register_set(set) {
+		await this.repository.register_set(set);
+		await this.repository.commit();
+	}
 	// Registers `task`. Mutates this model.
 	async register_task(task) {
 		await this.repository.register_task(task);
@@ -11,6 +16,13 @@ class Model {
 			let index = this.repository.data.completion_front.length;
 			await this.repository.insert_completion_front(index, task);
 		}
+		await this.repository.commit();
+	}
+	// Adds the task given by `task` to the project given by `set`.
+	async project_add(set, task) {
+		let causes = Array.from(set.set.get_history(task).get_recent());
+		let operation = Operation.create(task, set, true, causes);
+		await this.repository.add_operation(operation);
 		await this.repository.commit();
 	}
 	// Completes the task with index `index` in the completion front, assuming it exists. Mutates this model.
@@ -56,11 +68,10 @@ class Model {
 		await this.repository.commit();
 	}
 	// Moves the first task in the completion front to the end, assuming it exists. Mutates this model.
-	async cycle() {
-		let task = this.repository.data.completion_front[0];
-		await this.repository.delete_completion_front(0);
-		let index = this.repository.data.completion_front.length;
-		await this.repository.insert_completion_front(index, task);
+	async cycle(index) {
+		let task = this.repository.data.completion_front[index];
+		await this.repository.delete_completion_front(index);
+		await this.repository.insert_completion_front(this.repository.data.completion_front.length, task);
 		await this.repository.commit();
 	}
 	// Update the completion and uncompletion fronts without committing. Mutates this model.

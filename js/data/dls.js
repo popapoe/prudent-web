@@ -36,6 +36,10 @@ class DistributedLowerSet {
 			this.not_possibly_incomplete.add(task);
 		}
 	}
+	// Returns a boolean indicating if `el` is a definitely out element.
+	is_definitely_out(el) {
+		return !this.not_possibly_incomplete.get_minimum_lower_superset().contains(el);
+	}
 	// Returns a boolean indicating if `el` is a minimal not definitely in element.
 	is_min_not_definitely_in(el) {
 		return this.possibly_complete.get_maximum_lower_subset().is_min_out(el);

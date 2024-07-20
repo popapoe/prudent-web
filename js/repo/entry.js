@@ -12,6 +12,26 @@ class EntryTypeRegistry {
 	}
 }
 
+class EntryRegisterSet {
+	constructor(set) {
+		this.set = set;
+	}
+	async execute(data) {
+		data.sets.set(this.set.key, this.set);
+	}
+	static name = "register set";
+	static serialize(data, entry) {
+		return {
+			key: entry.set.key,
+			title: entry.set.title,
+			description: entry.set.description,
+		};
+	}
+	static deserialize(data, object) {
+		return new EntryRegisterSet(new Set_(object.key, object.title, object.description, new DistributedLowerSet(data.registry)));
+	}
+}
+
 class EntryRegisterTask {
 	constructor(task) {
 		this.task = task;
@@ -147,6 +167,7 @@ class EntryDeleteUncompletionFront {
 }
 
 let entry_type_registry = new EntryTypeRegistry();
+entry_type_registry.register(EntryRegisterSet);
 entry_type_registry.register(EntryRegisterTask);
 entry_type_registry.register(EntryAddOperation);
 entry_type_registry.register(EntryInsertCompletionFront);

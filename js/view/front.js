@@ -1,17 +1,13 @@
-// view/inspect-task.js view/create.js view/snapshot.js view/synchronize.js
+// view/inspect-task.js
 
 let template_front = document.getElementById("front");
 let template_first_task = document.getElementById("first-task");
-function make_front(model, switcher) {
+function make_front(model, switcher, parent, set) {
 	let shadow_host = document.createElement("div");
 	let shadow_root = shadow_host.attachShadow({ mode: "open" });
 	shadow_root.appendChild(template_front.content.cloneNode(true));
 	let completion_front_element = shadow_root.getElementById("completion");
 	let uncompletion_front_element = shadow_root.getElementById("uncompletion");
-	let add_element = shadow_root.getElementById("add");
-	let snapshot_element = shadow_root.getElementById("snapshot");
-	let materialize_element = shadow_root.getElementById("materialize");
-	let synchronize_element = shadow_root.getElementById("synchronize");
 	function update() {
 		while(completion_front_element.firstChild !== null) {
 			completion_front_element.removeChild(completion_front_element.firstChild);
@@ -19,8 +15,22 @@ function make_front(model, switcher) {
 		while(uncompletion_front_element.firstChild !== null) {
 			uncompletion_front_element.removeChild(uncompletion_front_element.firstChild);
 		}
-		if(model.repository.data.completion_front.length !== 0) {
-			let first_task = model.repository.data.completion_front[0];
+		let completion_front = [];
+		let uncompletion_front = [];
+		for(let index = 0; index < model.repository.data.completion_front.length; index++) {
+			let task = model.repository.data.completion_front[index];
+			if(set === null || !set.set.is_definitely_out(task)) {
+				completion_front.push({ index: index, task: task });
+			}
+		}
+		for(let index = 0; index < model.repository.data.uncompletion_front.length; index++) {
+			let task = model.repository.data.uncompletion_front[index];
+			if(set === null || !set.set.is_definitely_out(task)) {
+				uncompletion_front.push({ index: index, task: task });
+			}
+		}
+		if(completion_front.length !== 0) {
+			let first_task = completion_front[0].task;
 			let first_task_element = document.createElement("li");
 			completion_front_element.appendChild(first_task_element);
 			let first_task_shadow_host = document.createElement("div");
@@ -37,25 +47,29 @@ function make_front(model, switcher) {
 			first_task_link_element.href = "javascript:void(0);";
 			first_task_link_element.title = "Inspect this task.";
 			first_task_link_element.onclick = function(event) {
-				switcher.switch(make_inspect_task(model, switcher, first_task, shadow_host, [
-					new InspectTaskAction("cancel", "Go back to the task front.", function(task, screen) {
-						switcher.switch(shadow_host);
+				switcher.switch(make_inspect_task(model, switcher, first_task, parent, [
+					new InspectTaskAction("cancel", "Stop inspecting.", function(task, screen) {
+						switcher.switch(parent);
+					}),
+				], [
+					new InspectProjectAction("cancel", "Stop inspecting.", function(set, screen) {
+						switcher.switch(parent);
 					}),
 				]));
 			};
 			first_task_description_element.textContent = first_task.description;
 			first_task_complete_element.onclick = function(event) {
-				model.complete(0).then(function() {
+				model.complete(completion_front[0].index).then(function() {
 					update();
 				});
 			};
 			first_task_cycle_element.onclick = function(event) {
-				model.cycle().then(function() {
+				model.cycle(completion_front[0].index).then(function() {
 					update();
 				});
 			};
-			for(let index = 1; index < model.repository.data.completion_front.length; index++) {
-				let task = model.repository.data.completion_front[index];
+			for(let index = 1; index < completion_front.length; index++) {
+				let task = completion_front[index].task;
 				let task_element = document.createElement("li");
 				completion_front_element.appendChild(task_element);
 				let task_link_element = document.createElement("a");
@@ -67,23 +81,27 @@ function make_front(model, switcher) {
 				task_link_element.href = "javascript:void(0);";
 				task_link_element.title = "Inspect this task.";
 				task_link_element.onclick = function(event) {
-					switcher.switch(make_inspect_task(model, switcher, task, shadow_host, [
-						new InspectTaskAction("cancel", "Go back to the task front.", function(task, screen) {
-							switcher.switch(shadow_host);
+					switcher.switch(make_inspect_task(model, switcher, task, parent, [
+						new InspectTaskAction("cancel", "Stop inspecting.", function(task, screen) {
+							switcher.switch(parent);
+						}),
+					], [
+						new InspectProjectAction("cancel", "Stop inspecting.", function(set, screen) {
+							switcher.switch(parent);
 						}),
 					]));
 				};
 				task_complete_element.textContent = "complete";
 				task_complete_element.title = "Complete this task.";
 				task_complete_element.onclick = function(event) {
-					model.complete(index).then(function() {
+					model.complete(completion_front[index].index).then(function() {
 						update();
 					});
 				};
 			}
 		}
-		for(let index = 0; index < model.repository.data.uncompletion_front.length; index++) {
-			let task = model.repository.data.uncompletion_front[index];
+		for(let index = 0; index < uncompletion_front.length; index++) {
+			let task = uncompletion_front[index].task;
 			let task_element = document.createElement("li");
 			uncompletion_front_element.appendChild(task_element);
 			let task_link_element = document.createElement("a");
@@ -95,44 +113,25 @@ function make_front(model, switcher) {
 			task_link_element.href = "javascript:void(0);";
 			task_link_element.title = "Inspect this task.";
 			task_link_element.onclick = function(event) {
-				switcher.switch(make_inspect_task(model, switcher, task, shadow_host, [
-					new InspectTaskAction("cancel", "Go back to the task front.", function(task, screen) {
-						switcher.switch(shadow_host);
+				switcher.switch(make_inspect_task(model, switcher, task, parent, [
+					new InspectTaskAction("cancel", "Stop inspecting.", function(task, screen) {
+						switcher.switch(parent);
+					}),
+				], [
+					new InspectProjectAction("cancel", "Stop inspecting.", function(set, screen) {
+						switcher.switch(parent);
 					}),
 				]));
 			};
 			task_uncomplete_element.textContent = "uncomplete";
 			task_uncomplete_element.title = "Uncomplete this task.";
 			task_uncomplete_element.onclick = function(event) {
-				model.uncomplete(index).then(function() {
+				model.uncomplete(uncompletion_front[index].index).then(function() {
 					update();
 				});
 			};
 		}
 	}
-	add_element.onclick = function(event) {
-		switcher.switch(make_create(model, switcher, shadow_host, function(task) {
-			model.register_task(task).then(function() {
-				update();
-				switcher.switch(shadow_host);
-			});
-		}));
-	};
-	snapshot_element.onclick = function(event) {
-		switcher.switch(make_snapshot(model, switcher, shadow_host, function() {
-			update();
-			switcher.switch(shadow_host);
-		}));
-	};
-	materialize_element.onclick = function(event) {
-		model.repository.materialize();
-	};
-	synchronize_element.onclick = function(event) {
-		switcher.switch(make_synchronize(model, switcher, shadow_host, function() {
-			update();
-			switcher.switch(shadow_host);
-		}));
-	};
 	update();
 	return shadow_host;
 }

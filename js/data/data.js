@@ -8,7 +8,7 @@ class Data {
 		this.sets = new Map();
 		this.operations = new Map();
 		this.registry = new LowerSetRegistry();
-		this.completed = new Set_("completed", new DistributedLowerSet(this.registry));
+		this.completed = new Set_("completed", "", "", new DistributedLowerSet(this.registry));
 		this.sets.set("completed", this.completed);
 		this.completion_front = [];
 		this.uncompletion_front = [];
@@ -64,7 +64,11 @@ class Data {
 			}
 		}
 		for(let set of data.sets.values()) {
-			snapshot.sets.push(set.key);
+			snapshot.sets.push({
+				key: set.key,
+				title: set.title,
+				description: set.description,
+			});
 		}
 		for(let task of data.completion_front) {
 			snapshot.completion_front_keys.push(task.key);
@@ -86,9 +90,9 @@ class Data {
 			data.tasks.set(task_data.key, task);
 			data.register_task(task);
 		}
-		for(let key of snapshot.sets) {
-			let set = new Set_(key, new DistributedLowerSet(data.registry));
-			data.sets.set(key, set);
+		for(let set_data of snapshot.sets) {
+			let set = new Set_(set_data.key, set_data.title, set_data.description, new DistributedLowerSet(data.registry));
+			data.sets.set(set_data.key, set);
 		}
 		data.completed = data.sets.get("completed");
 		for(let operation_data of snapshot.operations) {

@@ -26,12 +26,14 @@ class Operation {
 }
 
 class Set_ {
-	constructor(key, set) {
+	constructor(key, title, description, set) {
 		this.key = key;
+		this.title = title;
+		this.description = description;
 		this.set = set;
 	}
-	static create(set) {
+	static create(title, description, set) {
 		let key = crypto.randomUUID();
-		return new Set_(key, set);
+		return new Set_(key, title, description, set);
 	}
 }
