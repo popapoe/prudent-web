@@ -1,5 +1,46 @@
 // data/relation.js
 
+// A lower set registry.
+class LowerSetRegistry {
+	// Constructs an empty registry.
+	constructor() {
+		this.relation = new Relation();
+		this.min = new Set();
+		this.sets = new Set();
+	}
+	// Returns the relation of this registry as an immutable `Relation` valid until this registry is mutated.
+	get_relation() {
+		return this.relation;
+	}
+	// Adds `el` to every lower set. Mutates this registry.
+	add(el) {
+		this.min.add(el);
+		for(let set of this.sets) {
+			set.out_min.add(el);
+		}
+	}
+	// Relates `from` to `to` in every lower set. Mutates this registry.
+	add_relationship(from, to) {
+		this.min.delete(to);
+		for(let set of this.sets) {
+			if(set.contains(to)) {
+				set.add(from);
+			} else if(set.contains(from)) {
+				set.cross.add(from, to);
+			}
+			set.in_max.delete(from);
+			set.out_min.delete(to);
+		}
+		this.relation.add(from, to);
+	}
+	// Return a registered lower set. Mutates this registry.
+	create() {
+		let set = new LowerSet(this.relation, new Set(this.min));
+		this.sets.add(set);
+		return set;
+	}
+}
+
 // A mutable lower set.
 class LowerSet {
 	// Constructs an empty lower subset of the upper closure of `min` ordered by the transitive closure of `relation` valid until either `min` or `relation` is mutated. Mutates `min`.
@@ -56,6 +97,28 @@ class LowerSet {
 		if(this.relation.get_preimage(el).size === 0) {
 			this.out_min.add(el);
 		}
+	}
+	// Adds `el`, assuming it is an out element. Mutates this lower set.
+	add(el) {
+		while(!this.is_min_out(el)) {
+			let pred;
+			for(pred of this.generate_out_pred(el)) {
+				break;
+			}
+			this.add(pred);
+		}
+		this.add_min_out(el);
+	}
+	// Removes `el`, assuming it is an in element. Mutates this lower set.
+	remove(el) {
+		while(!this.is_max_in(el)) {
+			let succ;
+			for(succ of this.generate_in_succ(el)) {
+				break;
+			}
+			this.remove(succ);
+		}
+		this.remove_max_in(el);
 	}
 	// Returns a boolean indicating if `el` is a minimal out element.
 	is_min_out(el) {
