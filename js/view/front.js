@@ -46,27 +46,18 @@ function make_front(model, switcher, parent, set) {
 			first_task_link_element.textContent = first_task.title;
 			first_task_link_element.href = "javascript:void(0);";
 			first_task_link_element.title = "Inspect this task.";
-			first_task_link_element.onclick = function(event) {
-				switcher.switch(make_inspect_task(model, switcher, first_task, parent, [
-					new InspectTaskAction("cancel", "Stop inspecting.", function(task, screen) {
-						switcher.switch(parent);
-					}),
-				], [
-					new InspectProjectAction("cancel", "Stop inspecting.", function(set, screen) {
-						switcher.switch(parent);
-					}),
-				]));
+			first_task_link_element.onclick = async function(event) {
+				await enter_inspect_task(model, switcher, first_task, false);
+				switcher.switch(parent);
 			};
 			first_task_description_element.textContent = first_task.description;
-			first_task_complete_element.onclick = function(event) {
-				model.complete(completion_front[0].index).then(function() {
-					update();
-				});
+			first_task_complete_element.onclick = async function(event) {
+				await model.complete(completion_front[0].index);
+				update();
 			};
-			first_task_cycle_element.onclick = function(event) {
-				model.cycle(completion_front[0].index).then(function() {
-					update();
-				});
+			first_task_cycle_element.onclick = async function(event) {
+				await model.cycle(completion_front[0].index);
+				update();
 			};
 			for(let index = 1; index < completion_front.length; index++) {
 				let task = completion_front[index].task;
@@ -80,23 +71,15 @@ function make_front(model, switcher, parent, set) {
 				task_link_element.textContent = task.title;
 				task_link_element.href = "javascript:void(0);";
 				task_link_element.title = "Inspect this task.";
-				task_link_element.onclick = function(event) {
-					switcher.switch(make_inspect_task(model, switcher, task, parent, [
-						new InspectTaskAction("cancel", "Stop inspecting.", function(task, screen) {
-							switcher.switch(parent);
-						}),
-					], [
-						new InspectProjectAction("cancel", "Stop inspecting.", function(set, screen) {
-							switcher.switch(parent);
-						}),
-					]));
+				task_link_element.onclick = async function(event) {
+					await enter_inspect_task(model, switcher, task, false);
+					switcher.switch(parent);
 				};
 				task_complete_element.textContent = "complete";
 				task_complete_element.title = "Complete this task.";
-				task_complete_element.onclick = function(event) {
-					model.complete(completion_front[index].index).then(function() {
-						update();
-					});
+				task_complete_element.onclick = async function(event) {
+					await model.complete(completion_front[index].index);
+					update();
 				};
 			}
 		}
@@ -112,23 +95,15 @@ function make_front(model, switcher, parent, set) {
 			task_link_element.textContent = task.title;
 			task_link_element.href = "javascript:void(0);";
 			task_link_element.title = "Inspect this task.";
-			task_link_element.onclick = function(event) {
-				switcher.switch(make_inspect_task(model, switcher, task, parent, [
-					new InspectTaskAction("cancel", "Stop inspecting.", function(task, screen) {
-						switcher.switch(parent);
-					}),
-				], [
-					new InspectProjectAction("cancel", "Stop inspecting.", function(set, screen) {
-						switcher.switch(parent);
-					}),
-				]));
+			task_link_element.onclick = async function(event) {
+				await enter_inspect_task(model, switcher, task, false);
+				switcher.switch(parent);
 			};
 			task_uncomplete_element.textContent = "uncomplete";
 			task_uncomplete_element.title = "Uncomplete this task.";
-			task_uncomplete_element.onclick = function(event) {
-				model.uncomplete(uncompletion_front[index].index).then(function() {
-					update();
-				});
+			task_uncomplete_element.onclick = async function(event) {
+				await model.uncomplete(uncompletion_front[index].index);
+				update();
 			};
 		}
 	}

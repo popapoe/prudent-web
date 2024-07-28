@@ -71,9 +71,10 @@ body {
 			<ul id="projects"></ul>
 			<h3>key</h3>
 			<p id="key"></p>
-			<div id="actions"></div>
 			<div>
 				<button id="back" title="Go to the previous screen.">back</button>
+				<button id="select" title="Select this task.">select</button>
+				<button id="cancel" title="Stop inspecting.">cancel</button>
 			</div>
 		</template>
 		<template id="inspect-project">
@@ -89,6 +90,7 @@ body {
 			<div id="actions"></div>
 			<div>
 				<button id="back" title="Go to the previous screen.">back</button>
+				<button id="cancel" title="Stop inspecting.">cancel</button>
 			</div>
 		</template>
 		<template id="create-task">
@@ -205,7 +207,7 @@ let repository = new Repository();
 let model = new Model(repository);
 repository.initialize().then(function() {
 	switcher = new Switcher();
-	switcher.switch(make_home(model, switcher));
+	enter_home(model, switcher);
 	document.body.appendChild(switcher.get_root());
 });
 		</script>
