@@ -15,28 +15,38 @@ class LowerSetRegistry {
 	// Adds `el` to every lower set. Mutates this registry.
 	add(el) {
 		this.min.add(el);
-		for(let set of this.sets) {
-			set.out_min.add(el);
+		for(let reference of this.sets) {
+			let set = reference.deref();
+			if(set === undefined) {
+				this.sets.delete(reference);
+			} else {
+				set.out_min.add(el);
+			}
 		}
 	}
 	// Relates `from` to `to` in every lower set. Mutates this registry.
 	add_relationship(from, to) {
 		this.min.delete(to);
-		for(let set of this.sets) {
-			if(set.contains(to)) {
-				set.add(from);
-			} else if(set.contains(from)) {
-				set.cross.add(from, to);
+		for(let reference of this.sets) {
+			let set = reference.deref();
+			if(set === undefined) {
+				this.sets.delete(reference);
+			} else {
+				if(set.contains(to)) {
+					set.add(from);
+				} else if(set.contains(from)) {
+					set.cross.add(from, to);
+				}
+				set.in_max.delete(from);
+				set.out_min.delete(to);
 			}
-			set.in_max.delete(from);
-			set.out_min.delete(to);
 		}
 		this.relation.add(from, to);
 	}
 	// Return a registered lower set. Mutates this registry.
 	create() {
 		let set = new LowerSet(this.relation, new Set(this.min));
-		this.sets.add(set);
+		this.sets.add(new WeakRef(set));
 		return set;
 	}
 }
