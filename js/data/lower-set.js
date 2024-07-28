@@ -6,15 +6,21 @@ class LowerSetRegistry {
 	constructor() {
 		this.relation = new Relation();
 		this.min = new Set();
+		this.max = new Set();
 		this.sets = new Set();
 	}
 	// Returns the relation of this registry as an immutable `Relation` valid until this registry is mutated.
 	get_relation() {
 		return this.relation;
 	}
+	// Returns the maximal elements of this registry as a `Set` valid until this registry is mutated.
+	get_max() {
+		return this.max;
+	}
 	// Adds `el` to every lower set. Mutates this registry.
 	add(el) {
 		this.min.add(el);
+		this.max.add(el);
 		for(let reference of this.sets) {
 			let set = reference.deref();
 			if(set === undefined) {
@@ -24,9 +30,24 @@ class LowerSetRegistry {
 			}
 		}
 	}
+	// Removes `el` from every lower set, assuming it has no relationships. Mutates this registry.
+	remove(el) {
+		this.min.delete(el);
+		this.max.delete(el);
+		for(let reference of this.sets) {
+			let set = reference.deref();
+			if(set === undefined) {
+				this.sets.delete(reference);
+			} else {
+				set.in_max.delete(el);
+				set.out_min.delete(el);
+			}
+		}
+	}
 	// Relates `from` to `to` in every lower set. Mutates this registry.
 	add_relationship(from, to) {
 		this.min.delete(to);
+		this.max.delete(from);
 		for(let reference of this.sets) {
 			let set = reference.deref();
 			if(set === undefined) {
@@ -42,6 +63,37 @@ class LowerSetRegistry {
 			}
 		}
 		this.relation.add(from, to);
+	}
+	// Removes the relationship between `from` and `to` in every lower set. Mutates this registry.
+	remove_relationship(from, to) {
+		let is_from_max = this.relation.get_image(from).size === 1;
+		let is_to_min = this.relation.get_preimage(to).size === 1;
+		if(is_from_max) {
+			this.max.add(from);
+		}
+		if(is_to_min) {
+			this.min.add(to);
+		}
+		for(let reference of this.sets) {
+			let set = reference.deref();
+			if(set === undefined) {
+				this.sets.delete(reference)
+			} else {
+				let is_from_in = set.contains(from);
+				let is_to_in = set.contains(to);
+				let cross = set.cross.get_image(from).has(to);
+				if(is_from_max && is_from_in) {
+					set.in_max.add(from);
+				}
+				if(is_to_min && !is_to_in) {
+					set.out_min.add(to);
+				}
+				if(cross) {
+					set.cross.remove(from, to);
+				}
+			}
+		}
+		this.relation.remove(from, to);
 	}
 	// Return a registered lower set. Mutates this registry.
 	create() {

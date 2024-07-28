@@ -18,10 +18,34 @@ class Model {
 		}
 		await this.repository.commit();
 	}
+	// Deregisters `task`. Mutates this model.
+	async deregister_task(task) {
+		{
+			let index = this.repository.data.completion_front.indexOf(task);
+			if(index !== -1) {
+				await this.repository.delete_completion_front(index);
+			}
+		}
+		{
+			let index = this.repository.data.uncompletion_front.indexOf(task);
+			if(index !== -1) {
+				await this.repository.delete_uncompletion_front(index);
+			}
+		}
+		await this.repository.deregister_task(task);
+		await this.repository.commit();
+	}
 	// Adds the task given by `task` to the project given by `set`.
 	async project_add(set, task) {
 		let causes = Array.from(set.set.get_history(task).get_recent());
 		let operation = Operation.create(task, set, true, causes);
+		await this.repository.add_operation(operation);
+		await this.repository.commit();
+	}
+	// Removes the task given by `task` from the project given by `set`.
+	async project_remove(set, task) {
+		let causes = Array.from(set.set.get_history(task).get_recent());
+		let operation = Operation.create(task, set, false, causes);
 		await this.repository.add_operation(operation);
 		await this.repository.commit();
 	}
