@@ -61,6 +61,32 @@ class EntryRegisterTask {
 	}
 }
 
+class EntryDeregisterTask {
+	constructor(task) {
+		this.task = task;
+	}
+	async execute(data) {
+		for(let set of data.sets.values()) {
+			let history = set.set.get_history(this.task);
+			for(let operation of history.get_operations()) {
+				data.operations.delete(operation.key);
+			}
+		}
+		for(let dependency of data.registry.relation.get_preimage(this.task)) {
+			data.registry.remove_relationship(dependency, this.task);
+		}
+		data.registry.remove(this.task);
+		data.tasks.delete(this.task.key);
+	}
+	static name = "deregister task";
+	static serialize(data, entry) {
+		return entry.task.key;
+	}
+	static deserialize(data, object) {
+		return new EntryDeregisterTask(data.tasks.get(object));
+	}
+}
+
 class EntryAddOperation {
 	constructor(operation) {
 		this.operation = operation;
@@ -169,6 +195,7 @@ class EntryDeleteUncompletionFront {
 let entry_type_registry = new EntryTypeRegistry();
 entry_type_registry.register(EntryRegisterSet);
 entry_type_registry.register(EntryRegisterTask);
+entry_type_registry.register(EntryDeregisterTask);
 entry_type_registry.register(EntryAddOperation);
 entry_type_registry.register(EntryInsertCompletionFront);
 entry_type_registry.register(EntryDeleteCompletionFront);

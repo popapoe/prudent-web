@@ -8,12 +8,16 @@ function make_front(model, switcher, parent, set) {
 	shadow_root.appendChild(template_front.content.cloneNode(true));
 	let completion_front_element = shadow_root.getElementById("completion");
 	let uncompletion_front_element = shadow_root.getElementById("uncompletion");
+	let remove_front_element = shadow_root.getElementById("remove");
 	function update() {
 		while(completion_front_element.firstChild !== null) {
 			completion_front_element.removeChild(completion_front_element.firstChild);
 		}
 		while(uncompletion_front_element.firstChild !== null) {
 			uncompletion_front_element.removeChild(uncompletion_front_element.firstChild);
+		}
+		while(remove_front_element.firstChild !== null) {
+			remove_front_element.removeChild(remove_front_element.firstChild);
 		}
 		let completion_front = [];
 		let uncompletion_front = [];
@@ -103,6 +107,36 @@ function make_front(model, switcher, parent, set) {
 			task_uncomplete_element.title = "Uncomplete this task.";
 			task_uncomplete_element.onclick = async function(event) {
 				await model.uncomplete(uncompletion_front[index].index);
+				update();
+			};
+		}
+		let iterable = model.repository.data.registry.get_max();
+		if(set !== null) {
+			iterable = set.set.generate_max_not_definitely_out();
+		}
+		for(let task of iterable) {
+			let task_element = document.createElement("li");
+			remove_front_element.appendChild(task_element);
+			let task_link_element = document.createElement("a");
+			let task_remove_element = document.createElement("button");
+			task_element.appendChild(task_link_element);
+			task_element.appendChild(document.createTextNode(" "));
+			task_element.appendChild(task_remove_element);
+			task_link_element.textContent = task.title;
+			task_link_element.href = "javascript:void(0);";
+			task_link_element.title = "Inspect this task.";
+			task_link_element.onclick = async function(event) {
+				await enter_inspect_task(model, switcher, task, false);
+				switcher.switch(parent);
+			};
+			task_remove_element.textContent = "remove";
+			task_remove_element.title = "Remove this task.";
+			task_remove_element.onclick = async function(event) {
+				if(set === null) {
+					await model.deregister_task(task);
+				} else {
+					await model.project_remove(set, task);
+				}
 				update();
 			};
 		}

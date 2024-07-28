@@ -165,6 +165,10 @@ class Repository {
 	register_task(task) {
 		return this.perform(new Entry(EntryRegisterTask, new EntryRegisterTask(task)));
 	}
+	// Deregisters `task`, assuming it has no dependents. Mutates this repository.
+	deregister_task(task) {
+		return this.perform(new Entry(EntryDeregisterTask, new EntryDeregisterTask(task)));
+	}
 	// Adds `operation`. Mutates this repository.
 	add_operation(operation) {
 		return this.perform(new Entry(EntryAddOperation, new EntryAddOperation(operation)));
