@@ -46,7 +46,10 @@ function enter_home(model, switcher) {
 			switcher.switch(shadow_host);
 		};
 		snapshot_element.onclick = async function(event) {
-			await enter_snapshot(model, switcher);
+			let result = await enter_snapshot(model, switcher);
+			if(result.tag === "import") {
+				await update();
+			}
 			switcher.switch(shadow_host);
 		};
 		materialize_element.onclick = async function(event) {
