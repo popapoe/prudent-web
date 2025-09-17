@@ -49,18 +49,20 @@ class Data {
 				description: task.description,
 				dependency_keys: dependency_keys,
 			});
-			for(let operation of data.completed.set.get_history(task).get_operations()) {
-				let cause_keys = [];
-				for(let cause of operation.causes) {
-					cause_keys.push(cause.key);
+			for(let set of data.sets.values()) {
+				for(let operation of set.set.get_history(task).get_operations()) {
+					let cause_keys = [];
+					for(let cause of operation.causes) {
+						cause_keys.push(cause.key);
+					}
+					snapshot.operations.push({
+						key: operation.key,
+						task_key: operation.el.key,
+						set_key: operation.set.key,
+						is_in: operation.is_in,
+						cause_keys: cause_keys,
+					});
 				}
-				snapshot.operations.push({
-					key: operation.key,
-					task_key: operation.el.key,
-					set_key: operation.set.key,
-					is_in: operation.is_in,
-					cause_keys: cause_keys,
-				});
 			}
 		}
 		for(let set of data.sets.values()) {
@@ -104,7 +106,7 @@ class Data {
 			let set = data.sets.get(operation_data.set_key);
 			let operation = new Operation(operation_data.key, task, set, operation_data.is_in, causes);
 			data.operations.set(operation_data.key, operation);
-			data.completed.set.add_operation(operation);
+			set.set.add_operation(operation);
 		}
 		for(let key of snapshot.completion_front_keys) {
 			data.completion_front.push(data.tasks.get(key));
