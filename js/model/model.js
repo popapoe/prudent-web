@@ -9,6 +9,11 @@ class Model {
 		await this.repository.register_set(set);
 		await this.repository.commit();
 	}
+	// Deregisters `set`. Mutates this model.
+	async deregister_set(set) {
+		await this.repository.deregister_set(set);
+		await this.repository.commit();
+	}
 	// Registers `task`. Mutates this model.
 	async register_task(task) {
 		await this.repository.register_task(task);

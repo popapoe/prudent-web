@@ -20,13 +20,22 @@ function enter_home(model, switcher) {
 					let project_element = document.createElement("li");
 					projects_element.appendChild(project_element);
 					let project_link_element = document.createElement("a");
+					let project_remove_element = document.createElement("button");
 					project_element.appendChild(project_link_element);
+					project_element.appendChild(document.createTextNode(" "));
+					project_element.appendChild(project_remove_element);
 					project_link_element.textContent = set.title;
 					project_link_element.href = "javascript:void(0);";
 					project_link_element.title = "Visit this project.";
 					project_link_element.onclick = async function(event) {
 						await enter_project(model, switcher, set);
 						switcher.switch(shadow_host);
+					};
+					project_remove_element.textContent = "remove";
+					project_remove_element.title = "Remove this project.";
+					project_remove_element.onclick = async function(event) {
+						await model.deregister_set(set);
+						await update();
 					};
 				}
 			}

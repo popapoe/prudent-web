@@ -161,6 +161,10 @@ class Repository {
 	register_set(set) {
 		return this.perform(new Entry(EntryRegisterSet, new EntryRegisterSet(set)));
 	}
+	// Deregisters `set`. Mutates this repository.
+	deregister_set(set) {
+		return this.perform(new Entry(EntryDeregisterSet, new EntryDeregisterSet(set)));
+	}
 	// Registers `task` as an incomplete task. Mutates this repository.
 	register_task(task) {
 		return this.perform(new Entry(EntryRegisterTask, new EntryRegisterTask(task)));
